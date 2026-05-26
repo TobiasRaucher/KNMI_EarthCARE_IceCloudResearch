@@ -1,15 +1,21 @@
-# KNMI_EarthCARE_IceCloudResearch — EarthCARE Ice Cloud Characterisation
+# KNMI_EarthCARE_IceCloudResearch — EarthCARE Ice Cloud Characterization
 
 **Bachelor's thesis | Tobias Raucher | KNMI · 2026**
 
-A Python research repository for characterising the **global distribution and physical properties of ice clouds** using the EarthCARE satellite's ATLID lidar and CPR radar. The study spans January 2025 – December 2025, with a focus period of December 2025, and includes a validation comparison against the CALIPSO satellite record.
+A Python research repository for characterizing the **global distribution and physical properties of ice clouds** using the EarthCARE satellite's ATLID lidar and CPR radar. The study spans January 2025 – December 2025, with a focus period of December 2025, and includes a validation comparison against the CALIPSO satellite record.
 
 ## Repository Structure
 
 ```
 KNMI_EarthCARE_IceCloudResearch/
-├── processing/         Six data ingestion & gridding notebooks (run on KNMI work PC)
-└── plotting/           Five analysis & visualisation notebooks (run locally)
+├── final_data/         Gridded NetCDF inputs for all plotting notebooks (tracked, 71 MB)
+├── notebooks/
+│   ├── processing/     Six data ingestion & gridding notebooks (run on KNMI work PC)
+│   └── plotting/       Five analysis & visualization notebooks (run locally)
+├── ectools/            earthcarekit Python package (pip install -e .)
+├── external/           XUEMEI_earthcare_analysis companion repository
+├── presentations/      KNMI Preliminary Results presentation
+└── data/ output/       Raw HDF5 files and intermediate outputs — not tracked
 ```
 
 ---
@@ -25,6 +31,23 @@ KNMI_EarthCARE_IceCloudResearch/
 
 Raw data: EarthCARE L2 HDF5 files delivered as ZIP archives, not tracked in this repository.
 Remote storage: `/net/pc230016/nobackup_1/users/zadelhof/EarthCARE_DATA/L2/` (KNMI work PC only).
+
+---
+
+## Figure Data Index
+
+All files listed below are in `final_data/` (53 files, 71 MB). Each row maps one thesis figure to its input files.
+
+| Figure | Description | Files in `final_data/` |
+|--------|-------------|------------------------|
+| **Fig. 1** | Methodological flowchart | *(diagram only — no data)* |
+| **Fig. 2** | Annual mean ice cloud occurrence, 2025 | `ATL_TC_2A_1.0deg_2025????_2025????_occurrence_{latlon,latheight}.nc` × 24 (12 months × 2 formats)<br>`AC_TC_2B_1.0deg_2025????_2025????_occurrence_{latlon,latheight}.nc` × 24 |
+| **Fig. 3** | Temperature regime, December 2025 | `ATL_TC_2A_temperature_0.5deg_20251003_20260228_latheight.nc`<br>`combined_all_1.0deg_20251201_20251231_latheight.nc` |
+| **Fig. 4** | Zonal-mean microphysics, December 2025 | `ATL_ICE_2A_v2_1.0deg_20251201_20251231_latheight.nc`<br>`combined_ice_1.0deg_20251201_20251231_latheight.nc` |
+| **Fig. 5** | Zonal-mean optical properties at 355 nm, December 2025 | `ATL_EBD_2A_v2_1.0deg_20251201_20251231_latheight.nc`<br>`combined_all_1.0deg_20251201_20251231_latheight.nc` |
+| **Fig. 6** | EarthCARE vs CALIPSO, December 2025 vs 2016 | `ATL_TC_2A_1.0deg_20251201_20251231_occurrence_{latlon,latheight}.nc` (subset of Fig. 2 files)<br>CALIPSO: `CAL_LID_L3_Ice_Cloud-Standard-V1-00.2016-12A.hdf` — available from [NASA ASDC](https://asdc.larc.nasa.gov) |
+
+> `combined_all` and `combined_ice` are merged outputs containing ice cloud occurrence, temperature, and sample counts for December 2025; used to provide occurrence contours and quality masks in Figures 3–5.
 
 ---
 
@@ -158,38 +181,37 @@ Grids **microphysical retrievals** (IWC, effective radius) from `ATL_ICE_2A`, re
 
 ---
 
-### `notebooks/plotting/` — Analysis & Visualisation
+### `notebooks/plotting/` — Analysis & Visualization
 
 > Run **locally** against NetCDF outputs copied from the work PC.
-> Global maps use Robinson projection (Cartopy). All statistics are pixel-count weighted throughout.
+> Global maps use the Robinson projection (Cartopy). All statistics are pixel-count weighted throughout.
 
 ---
 
-#### `Q1_distribution.ipynb`
+#### `Q1_distribution.ipynb` → Figure 2
 
-**Research question 1 — Spatial distribution of EarthCARE ice clouds (January–December 2025)**
+**Spatial distribution of EarthCARE ice clouds, January–December 2025**
 
-Reads monthly ATL_TC and AC_TC occurrence files and produces eight figures examining where ice clouds occur and how the two classification products compare.
+Aggregates the 12 monthly ATL_TC and AC_TC occurrence files and produces maps and zonal cross-sections for the lidar-only product, the synergetic product, and their difference.
 
-| Figure | Description |
+| Panel | Description |
 |---|---|
-| 1a | ATL_TC ice cloud occurrence — global Robinson map |
-| 1b | ATL_TC ice cloud occurrence — lat-height zonal cross-section |
-| 2a | AC_TC ice cloud occurrence — global Robinson map |
-| 2b | AC_TC ice cloud occurrence — lat-height zonal cross-section |
-| 3a–3b | Ice cloud occurrence difference (AC_TC − ATL_TC): synergetic advantage |
-| 4a–4b | All-cloud occurrence difference (AC_TC − ATL_TC) |
+| Row 1 | ATL_TC (lidar-only) ice cloud occurrence — global map + zonal cross-section |
+| Row 2 | AC_TC (synergetic) ice cloud occurrence — global map + zonal cross-section |
+| Row 3 | Occurrence difference (AC_TC − ATL_TC) — global map + zonal cross-section |
 
 Includes zonal statistics broken down by latitude band (Tropics / Subtropics / Extratropics) and height tier (High >8 km / Mid 4–8 km / Low <4 km).
 Smoothing: median filter (size 3) + Gaussian (σ = 1.5 for maps, σ = 1.0 for cross-sections).
 
+**Data:** 24 monthly ATL_TC files + 24 monthly AC_TC files from `final_data/`
+
 ---
 
-#### `Q2_temperature.ipynb`
+#### `Q2_temperature.ipynb` → Figure 3
 
-**Research question 2 — Thermal environment of ice clouds (December 2025)**
+**Temperature regime of ice clouds, December 2025**
 
-Combines the full-atmosphere temperature field (October 2025 – February 2026, 0.5° grid, no ice mask) with December 2025 ice cloud data to contextualise ice detections within the thermal structure of the atmosphere.
+Combines the full-atmosphere temperature field (October 2025 – February 2026, 0.5° grid, no ice mask) with December 2025 ice cloud data to contextualize ice detections within the thermal structure of the atmosphere.
 
 | Figure | Description |
 |---|---|
@@ -213,11 +235,13 @@ Temperature zone breakdown (by ice-pixel count):
 
 Weighted mean ice temperature: **−45.1 °C** (IQR: −56.7 to −31.1 °C; central 90%: −78.9 to −21.0 °C).
 
+**Data:** `ATL_TC_2A_temperature_0.5deg_20251003_20260228_latheight.nc` + `combined_all_1.0deg_20251201_20251231_latheight.nc`
+
 ---
 
-#### `Q2_microphysics.ipynb`
+#### `Q2_microphysics.ipynb` → Figure 4
 
-**Research question 2 — Microphysical properties of ice clouds (December 2025)**
+**Microphysical properties of ice clouds, December 2025**
 
 | Figure | Description |
 |---|---|
@@ -232,16 +256,18 @@ Key statistics (pixel-count weighted, min 10 samples/cell):
 | Ice water content | 0.024 mg m⁻³ | 8 × 10⁻⁶ – 0.99 mg m⁻³ |
 | Effective radius | 70.26 μm | 0.7 – 154 μm |
 
+**Data:** `ATL_ICE_2A_v2_1.0deg_20251201_20251231_latheight.nc` + `combined_ice_1.0deg_20251201_20251231_latheight.nc`
+
 ---
 
-#### `Q2_optics.ipynb`
+#### `Q2_optics.ipynb` → Figure 5
 
-**Research question 2 — Optical properties of ice clouds (December 2025)**
+**Optical properties of ice clouds at 355 nm, December 2025**
 
 | Figure | Description |
 |---|---|
-| M3 / M3b | Linear depolarization ratio: quantile-normalised and linear scale |
-| M4 / M4b | Lidar ratio: quantile-normalised and linear scale |
+| M3 / M3b | Linear depolarization ratio: quantile-normalized and linear scale |
+| M4 / M4b | Lidar ratio: quantile-normalized and linear scale |
 | M4c–M4e | Extinction (v1.5 + v2 SNR-filtered) and backscatter coefficient (log scale) |
 | M4f | Extinction vs backscatter scatter (log-log regression: slope 0.845, r = 0.749) |
 | M5 | Vertical profiles by latitude band: depol ratio and lidar ratio ±1 std |
@@ -256,11 +282,13 @@ Key statistics (min 50 samples/cell, T < 260 K mask applied):
 | Depolarization ratio | 0.373 | 0.038 | 0.13 – 0.58 |
 | Lidar ratio | 27.25 sr | 1.71 sr | 14.4 – 62.5 sr |
 
+**Data:** `ATL_EBD_2A_v2_1.0deg_20251201_20251231_latheight.nc` + `combined_all_1.0deg_20251201_20251231_latheight.nc`
+
 ---
 
-#### `Q3_calipso_comparison.ipynb`
+#### `Q3_calipso_comparison.ipynb` → Figure 6
 
-**Research question 3 — Validation against CALIPSO (December 2016)**
+**EarthCARE vs CALIPSO, December 2025 vs December 2016**
 
 Reads CALIPSO L3 ice cloud data in HDF4 format (85 lat × 144 lon × 172 altitude levels, December 2016) and reproduces parallel occurrence maps and temperature statistics alongside the EarthCARE December 2025 results.
 
@@ -280,6 +308,8 @@ Comparison of key statistics (December 2025 vs December 2016):
 | Pure ice fraction | 40.6% | 49.4% |
 | Mixed-phase fraction | 35.1% | 24.1% |
 | Warm fraction | 4.0% | 3.1% |
+
+**Data:** `ATL_TC_2A_1.0deg_20251201_20251231_occurrence_{latlon,latheight}.nc` (from `final_data/`) + CALIPSO L3 `CAL_LID_L3_Ice_Cloud-Standard-V1-00.2016-12A.hdf`, available from [NASA ASDC](https://asdc.larc.nasa.gov) (Winker et al., 2024).
 
 ---
 
