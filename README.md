@@ -1,16 +1,21 @@
-# KNMI_EarthCARE_IceCloudResearch — EarthCARE Ice Cloud Characterization
+# KNMI_EarthCARE_IceCloudResearch — EarthCARE Ice Cloud Characterisation
 
 **Bachelor's thesis | Tobias Raucher | KNMI · 2026**
 
-A Python research repository for characterizing the **global distribution and physical properties of ice clouds** using the EarthCARE satellite's ATLID lidar and CPR radar. The study spans January 2025 – December 2025, with a focus period of December 2025, and includes a validation comparison against the CALIPSO satellite record.
+A Python research repository for characterising the **global distribution and physical properties of ice clouds** using the EarthCARE satellite's ATLID lidar and CPR radar. The study spans January 2025 – December 2025, with a focus period of December 2025, and includes a validation comparison against the CALIPSO satellite record.
 
 ## Repository Structure
 
 ```
 KNMI_EarthCARE_IceCloudResearch/
-├── final_data/     Gridded NetCDF inputs for all plotting notebooks (tracked, 71 MB)
-├── processing/     Six data ingestion & gridding notebooks (run on KNMI work PC)
-└── plotting/       Five analysis & visualization notebooks (run locally)
+├── final_data/         Gridded NetCDF inputs for all plotting notebooks (tracked, 71 MB)
+├── notebooks/
+│   ├── processing/     Six data ingestion & gridding notebooks (run on KNMI work PC)
+│   └── plotting/       Five analysis & visualisation notebooks (run locally)
+├── ectools/            earthcarekit Python package (pip install -e .)
+├── external/           XUEMEI_earthcare_analysis companion repository
+├── presentations/      KNMI Preliminary Results presentation
+└── data/ output/       Raw HDF5 files and intermediate outputs — not tracked
 ```
 
 ---
@@ -176,10 +181,10 @@ Grids **microphysical retrievals** (IWC, effective radius) from `ATL_ICE_2A`, re
 
 ---
 
-### `notebooks/plotting/` — Analysis & Visualization
+### `notebooks/plotting/` — Analysis & Visualisation
 
 > Run **locally** against NetCDF outputs copied from the work PC.
-> Global maps use the Robinson projection (Cartopy). All statistics are pixel-count weighted throughout.
+> Global maps use Robinson projection (Cartopy). All statistics are pixel-count weighted throughout.
 
 ---
 
@@ -206,7 +211,7 @@ Smoothing: median filter (size 3) + Gaussian (σ = 1.5 for maps, σ = 1.0 for cr
 
 **Temperature regime of ice clouds, December 2025**
 
-Combines the full-atmosphere temperature field (October 2025 – February 2026, 0.5° grid, no ice mask) with December 2025 ice cloud data to contextualize ice detections within the thermal structure of the atmosphere.
+Combines the full-atmosphere temperature field (October 2025 – February 2026, 0.5° grid, no ice mask) with December 2025 ice cloud data to contextualise ice detections within the thermal structure of the atmosphere.
 
 | Figure | Description |
 |---|---|
@@ -261,8 +266,8 @@ Key statistics (pixel-count weighted, min 10 samples/cell):
 
 | Figure | Description |
 |---|---|
-| M3 / M3b | Linear depolarization ratio: quantile-normalized and linear scale |
-| M4 / M4b | Lidar ratio: quantile-normalized and linear scale |
+| M3 / M3b | Linear depolarization ratio: quantile-normalised and linear scale |
+| M4 / M4b | Lidar ratio: quantile-normalised and linear scale |
 | M4c–M4e | Extinction (v1.5 + v2 SNR-filtered) and backscatter coefficient (log scale) |
 | M4f | Extinction vs backscatter scatter (log-log regression: slope 0.845, r = 0.749) |
 | M5 | Vertical profiles by latitude band: depol ratio and lidar ratio ±1 std |
