@@ -8,14 +8,9 @@ A Python research repository for characterizing the **global distribution and ph
 
 ```
 KNMI_EarthCARE_IceCloudResearch/
-├── final_data/         Gridded NetCDF inputs for all plotting notebooks (tracked, 71 MB)
-├── notebooks/
-│   ├── processing/     Six data ingestion & gridding notebooks (run on KNMI work PC)
-│   └── plotting/       Five analysis & visualization notebooks (run locally)
-├── ectools/            earthcarekit Python package (pip install -e .)
-├── external/           XUEMEI_earthcare_analysis companion repository
-├── presentations/      KNMI Preliminary Results presentation
-└── data/ output/       Raw HDF5 files and intermediate outputs — not tracked
+├── final_data/     Gridded NetCDF inputs for all plotting notebooks (tracked, 71 MB)
+├── processing/     Six data ingestion & gridding notebooks (run on KNMI work PC)
+└── plotting/       Five analysis & visualization notebooks (run locally)
 ```
 
 ---
